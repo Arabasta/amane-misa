@@ -15,15 +15,6 @@ todo
 2. **High lookup frequency:** Querying PuppetDB on every API call causes latency spikes and heavy DB load
 3. **Static load balancers** cannot handle per‑node master assignment
 
-## Alternative Approaches
-
-| Approach                               | Pros                   | Cons                                                                  |
-|----------------------------------------|------------------------|-----------------------------------------------------------------------|
-| Query PuppetDB per request             | Always up-to-date      | High latency, DB load, scaling issues                                 |
-| NGINX            | Advanced HTTP features | New workers have to be created on every change, no built‑in TCP queue |
-| Service Registry (e.g., Consul, Eureka) | Always up-to-date      | Additional infrastructure, complexity                                 |
-| Custom Gateway                         | Tailored               | Significant development effort and maintenance overhead               |
-
 ## Proposed Solution
 
 1. **HAProxy API Gateway**: a single entry point for all requests, routing to the correct master based on a map file
@@ -81,6 +72,14 @@ To research: running HAProxy in multi thread / mutli process mode
 - Current implementation uses short polling (every minute) to update the map
 - Long polling PuppetDB for changes to the node list can give near real-time update (probably better to use redispatch with short polling)
 
+## Alternative Approaches
+
+| Approach                               | Pros                   | Cons                                                                  |
+|----------------------------------------|------------------------|-----------------------------------------------------------------------|
+| Query PuppetDB per request             | Always up-to-date      | High latency, DB load, scaling issues                                 |
+| NGINX            | Advanced HTTP features | New workers have to be created on every change, no built‑in TCP queue |
+| Service Registry (e.g., Consul, Eureka) | Always up-to-date      | Additional infrastructure, complexity                                 |
+| Custom Gateway                         | Tailored               | Significant development effort and maintenance overhead               |
 
 ---
 
@@ -142,7 +141,6 @@ Password: `admin`
 1. [HAProxy Maps](https://www.haproxy.com/blog/introduction-to-haproxy-maps)
 2. [HAProxy as an API Gateway](https://www.haproxy.com/blog/using-haproxy-as-an-api-gateway-part-1-introduction)
 3. [HAProxy Runtime API](https://www.haproxy.com/documentation/haproxy-runtime-api/)
-4. Airbnb [Synapse](https://medium.com/airbnb-engineering/smartstack-service-discovery-in-the-cloud-4b8a080de619#.m0x2ks9ja:~:text=consume%20a%20message.-,Synapse,-Synapse%20is%20the)
 
 ---
 
