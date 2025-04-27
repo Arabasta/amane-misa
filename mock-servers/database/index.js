@@ -1,15 +1,6 @@
 const express = require('express');
-//const cors = require('cors');
 
 const app = express();
-
-// CORS configuration - only need this once
-// app.use(cors({
-//     origin: '*',
-//     methods: ['GET', 'POST', 'OPTIONS'],
-//     allowedHeaders: ['Content-Type']
-// }));
-
 const PORT = 3003;
 
 let nodeMasterMap = {
@@ -19,7 +10,8 @@ let nodeMasterMap = {
     "node4.example.com": "master2"
 };
 
-// Randomly shuffle masters
+// todo: get node-masters from masters
+// randomly shuffle masters
 setInterval(() => {
     for (let node in nodeMasterMap) {
         nodeMasterMap[node] = Math.random() > 0.5 ? "master1" : "master2";
