@@ -1,0 +1,46 @@
+services:
+  haproxy:
+    user: root
+    image: haproxy:3.1.7
+    container_name: haproxy-server
+    ports:
+      - "8080:80"
+      - "8081:8081"
+    volumes:
+      # use custom config files
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./haproxy/node-master.map:/usr/local/etc/haproxy/node-master.map:rw
+      - haproxy_runtime:/var/run/haproxy
+    restart: unless-stopped
+
+  # start mock servers
+  master1:
+    build: ./mock-servers/master1
+    container_name: master1
+    ports:
+      - "3001:3001"
+
+  master2:
+    build: ./mock-servers/master2
+    container_name: master2
+    ports:
+      - "3002:3002"
+
+  database:
+    build: ./mock-servers/database
+    container_name: database
+    ports:
+      - "3003:3003"
+
+  map-updater:
+    build: ./map-updater
+    container_name: map-updater
+    depends_on:
+      - haproxy
+      - database
+    volumes:
+      - ./haproxy/node-master.map:/usr/local/etc/haproxy/node-master.map:rw
+      - haproxy_runtime:/var/run/haproxy
+
+volumes:
+  haproxy_runtime:

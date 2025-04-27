@@ -1,0 +1,4 @@
+node1.example.com master1
+node2.example.com master2
+node3.example.com master2
+node4.example.com master1
