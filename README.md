@@ -40,21 +40,26 @@ todo
 ## Limitations & Considerations
 
 ### Eventual Consistency
-- Map updates occur on every minute.
+- Map updates occur on every minute
 - If a node moves to a different master, requests may still route to the old master until the next polling cycle updates the map (to be fixed with redispatch)
 - Manual map reloads can be triggered via API if immediate consistency is required
 
 ### HAProxy maxqueue and maxconn
 
-#### maxconn
-- maxconn limits concurrent connections HAProxy manages, each consumes a file descriptor and memory
-- Hard limit is `ulimit -n`
+#### global maxconn
+- limits concurrent connections HAProxy accepts and manages
+- each consumes a file descriptor and some memory
+- hard limit is `ulimit -n`, additional clients go to the kernel TCP accept queue
 
-#### maxqueue
-- Internal in memory FIFO queue for buffering connections to the Puppet Masters
-- Returns 503 if both the queue and maxconn are full
+#### server maxconn
+- maxconn limits concurrent connections to a backend server
+- once the limit is reached, the request gets queued in the server's queue
+
+#### server maxqueue
+- internal in memory FIFO queue for  servers
+- returns HTTP 503 if both the queue is full
 - HTTP requests waiting in the queue can be [prioritized](https://www.haproxy.com/documentation/haproxy-configuration-tutorials/performance/overload-protection/#http-request-priority-queue)
-- Question, can this be configured at runtime?
+  - **Question** can this be configured at runtime?
 
 ### Redispatch
 [WIP](https://www.haproxy.com/documentation/haproxy-configuration-tutorials/reliability/retries/#redispatch-to-a-different-server)
